@@ -7,6 +7,7 @@ function initializeApp() {
     const signalWordFilter = document.getElementById('filter-signal-word');
     const resultsCount = document.getElementById('results-count');
     const emptyState = document.getElementById('empty-state');
+    const toast = document.getElementById('toast');
 
     let sdsData = [];
     let displayedData = [];
@@ -112,6 +113,7 @@ function initializeApp() {
                 <td class="px-6 py-4 whitespace-nowrap">${createLinkCell(item[columnMapping.sdsFile], 'SDS')}</td>
                 <td class="px-6 py-4 whitespace-nowrap">${createLinkCell(item[columnMapping.specFile], 'Spec')}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    ${item[columnMapping.sdsFile] ? `<button class="text-sky-600 hover:text-sky-800 mr-4" data-sds-url="${item[columnMapping.sdsFile]}" aria-label="Copy SDS link for ${item[columnMapping.productName]}" data-testid="copy-sds-link-button">Copy Link</button>` : ''}
                     <button class="text-sky-600 hover:text-sky-800" data-index="${index}" aria-expanded="false" aria-controls="details-${index}">
                         Details
                     </button>
@@ -119,6 +121,18 @@ function initializeApp() {
             `;
             sdsTableBody.appendChild(row);
         });
+    }
+
+    function showToast(message) {
+        toast.textContent = message;
+        toast.classList.remove('hidden');
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 300); // Wait for fade out to complete
+        }, 3000);
     }
 
     function createGhsChips(codes) {
@@ -185,13 +199,13 @@ function initializeApp() {
 
     function applyFiltersAndSort() {
         const searchTerm = searchInput.value.toLowerCase().split(' ').filter(Boolean);
-        const manufacturer = manufacturerFilter.value;
+        const selectedManufacturers = Array.from(manufacturerFilter.selectedOptions).map(opt => opt.value);
         const category = categoryFilter.value;
         const signalWord = signalWordFilter.value;
         const sortBy = sortSelect.value;
 
         displayedData = sdsData.filter(item => {
-            const manufacturerMatch = !manufacturer || item[columnMapping.manufacturer] === manufacturer;
+            const manufacturerMatch = selectedManufacturers.length === 0 || selectedManufacturers.includes(item[columnMapping.manufacturer]);
             const categoryMatch = !category || item[columnMapping.category] === category;
             const signalWordMatch = !signalWord || item[columnMapping.signalWord] === signalWord;
 
@@ -232,8 +246,21 @@ function initializeApp() {
     signalWordFilter.addEventListener('change', applyFiltersAndSort);
 
     sdsTableBody.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON' && e.target.dataset.index) {
-            toggleDetails(e.target, parseInt(e.target.dataset.index, 10));
+        const target = e.target;
+        if (target.tagName === 'BUTTON' && target.dataset.index) {
+            toggleDetails(target, parseInt(target.dataset.index, 10));
+        }
+
+        if (target.tagName === 'BUTTON' && target.dataset.sdsUrl) {
+            const urlToCopy = target.dataset.sdsUrl;
+            const fullUrl = urlToCopy.startsWith('/sds/') ? window.location.origin + urlToCopy : urlToCopy;
+
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                showToast('Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy link: ', err);
+                showToast('Failed to copy link.');
+            });
         }
     });
 
