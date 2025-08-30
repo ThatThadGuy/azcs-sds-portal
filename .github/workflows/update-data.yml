@@ -1,0 +1,33 @@
+name: Update SDS Data
+
+on:
+  workflow_dispatch: # Allow manual runs
+  schedule:
+    - cron: '0 3 * * *' # Run daily at 3 AM UTC
+
+jobs:
+  update-csv:
+    runs-on: ubuntu-latest
+    # Continue even if the secret is not set, to allow the repo to function without it.
+    continue-on-error: true
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download latest sds.csv
+        # Use `--fail` to exit with an error code if the download fails.
+        # Use `-o` to specify the output file path.
+        # The URL is stored in a repository secret.
+        run: curl --fail -L "${{ secrets.SHEET_CSV_URL }}" -o data/sds.csv
+
+      - name: Commit and push if data changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(data): update sds.csv from remote source"
+          branch: main # or your default branch
+          file_pattern: data/sds.csv
+          commit_options: '--no-verify' # Optional: skip pre-commit hooks if any
+          repository: .
+          commit_user_name: "GitHub Actions"
+          commit_user_email: "actions@github.com"
+          commit_author: "GitHub Actions <actions@github.com>"

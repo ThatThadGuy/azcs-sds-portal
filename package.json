@@ -1,0 +1,19 @@
+{
+  "name": "sds-portal",
+  "version": "1.0.0",
+  "description": "A searchable portal for Safety Data Sheets.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sds",
+    "portal",
+    "github-pages"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "papaparse": "^5.3.2"
+  }
+}

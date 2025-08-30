@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDS Finder</title>
+    <meta name="description" content="A searchable portal for Safety Data Sheets.">
+    <link rel="stylesheet" href="styles/site.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 top-0 left-0 bg-white p-4">
+        Skip to main content
+    </a>
+
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="assets/logo.svg" alt="Logo" class="h-10 w-10 mr-3">
+                <h1 class="text-2xl font-bold">SDS Finder</h1>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container mx-auto p-4">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <!-- Search and Filters -->
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+                <div class="md:col-span-2 lg:col-span-3">
+                    <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+                    <input type="search" id="search" placeholder="Search by name, mfg, category..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="sort" class="block text-sm font-medium text-gray-700">Sort by</label>
+                    <select id="sort" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
+                        <option value="Product Name">Product Name</option>
+                        <option value="Manufacturer">Manufacturer</option>
+                        <option value="Signal Word">Signal Word</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filter-manufacturer" class="block text-sm font-medium text-gray-700">Manufacturer</label>
+                    <select id="filter-manufacturer" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filter-category" class="block text-sm font-medium text-gray-700">Category / Use</label>
+                    <select id="filter-category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filter-signal-word" class="block text-sm font-medium text-gray-700">Signal Word</label>
+                    <select id="filter-signal-word" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
+                        <option value="">All</option>
+                        <option value="Danger">Danger</option>
+                        <option value="Warning">Warning</option>
+                        <option value="None">None</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Results Count -->
+            <div id="results-count" aria-live="polite" class="mb-4 text-sm text-gray-600"></div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturer</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category / Use</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Signal Word</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GHS Hazard Codes</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SDS</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spec</th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Details</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="sds-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Rows will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-12">
+                <p class="text-gray-500">No results found.</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="scripts/app.js"></script>
+</body>
+</html>

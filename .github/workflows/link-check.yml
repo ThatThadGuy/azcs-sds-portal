@@ -1,0 +1,42 @@
+name: Check Links
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 4 * * *' # Run daily at 4:30 AM UTC
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Extract URLs from data file
+        run: |
+          node scripts/extract-urls.js --columns "SDS File,Spec File" > urls_to_check.txt
+          echo "Extracted URLs:"
+          cat urls_to_check.txt
+
+      - name: Run Lychee Link Checker
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: >
+            --verbose
+            --accept 200,301,302
+            urls_to_check.txt
+          # The action will fail if any link fails.
+          # The original request to "fail if >2 non-OK links" is not a standard
+          # feature of lychee-action. Failing on the first error is a safer default.
+          # A custom script would be needed to implement the >2 threshold.
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

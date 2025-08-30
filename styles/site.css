@@ -1,0 +1,66 @@
+/* For browsers that don't support :focus-visible */
+:focus {
+    outline: 2px solid #0ea5e9;
+    outline-offset: 2px;
+}
+
+/* Remove outline for users who don't need it */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Style for users who need it */
+:focus-visible {
+    outline: 2px solid #0ea5e9;
+    outline-offset: 2px;
+}
+
+
+/* Zebra stripes for table rows */
+#sds-table-body tr:nth-child(even) {
+    background-color: #f9fafb; /* gray-50 */
+}
+
+#sds-table-body tr:hover {
+    background-color: #f0f9ff; /* sky-50 */
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Style for the details row */
+.details-row {
+    background-color: #f3f4f6; /* gray-100 */
+}
+
+.details-row td {
+    padding: 1rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.details-grid > div {
+    padding: 0.5rem;
+}
+
+.details-grid dt {
+    font-weight: bold;
+    color: #4b5563; /* gray-600 */
+}
+
+.details-grid dd {
+    color: #1f2937; /* gray-800 */
+}

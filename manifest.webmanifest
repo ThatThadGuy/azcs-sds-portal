@@ -1,0 +1,16 @@
+{
+  "name": "SDS Finder",
+  "short_name": "SDS Finder",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#0ea5e9",
+  "description": "A searchable portal for Safety Data Sheets.",
+  "icons": [
+    {
+      "src": "/assets/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

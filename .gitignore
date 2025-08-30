@@ -1,0 +1,8 @@
+# Dependencies
+/node_modules
+
+# Log files
+*.log
+
+# Temporary files
+urls_to_check.txt
