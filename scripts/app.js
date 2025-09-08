@@ -37,7 +37,7 @@ function initializeApp() {
 
     async function fetchData() {
         try {
-            const response = await fetch('/data/sds.csv', { cache: 'no-store' });
+            const response = await fetch('data/sds.csv', { cache: 'no-store' });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
