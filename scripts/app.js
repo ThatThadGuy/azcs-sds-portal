@@ -48,14 +48,7 @@ function initializeApp() {
                 skipEmptyLines: true,
                 transformHeader: header => header.trim(),
                 complete: (results) => {
-                    sdsData = results.data.map(row => {
-                        // Trim whitespace from all values in the row
-                        const trimmedRow = {};
-                        for (const key in row) {
-                            trimmedRow[key] = (row[key] || '').trim();
-                        }
-                        return trimmedRow;
-                    });
+                    sdsData = cleanData(results.data);
                     populateFilters();
                     applyFiltersAndSort();
                 },
@@ -70,9 +63,70 @@ function initializeApp() {
         }
     }
 
+    function cleanData(data) {
+        return data.map(row => {
+            // Create a mutable copy of the row
+            let newRow = { ...row };
+
+            // Special case for "Sizzle Powder Add"
+            if (newRow[columnMapping.productName] && newRow[columnMapping.productName].includes('Sizzle Powder Add')) {
+                const manufacturer = newRow[columnMapping.signalWord];
+                const category = newRow[columnMapping.ghsCodes];
+                const signalWord = newRow[columnMapping.pCodes];
+                const ghsCodes = newRow[columnMapping.dotUn];
+                const pCodes = newRow[columnMapping.appearanceOdor];
+                const ph = newRow[columnMapping.boilingPoint];
+                const notes = newRow[columnMapping.coverage];
+                const sdsFile = newRow[columnMapping.dilution];
+
+
+                newRow[columnMapping.manufacturer] = manufacturer;
+                newRow[columnMapping.category] = category;
+                newRow[columnMapping.signalWord] = signalWord;
+                newRow[columnMapping.ghsCodes] = ghsCodes;
+                newRow[columnMapping.pCodes] = pCodes;
+                newRow[columnMapping.dotUn] = '';
+                newRow[columnMapping.appearanceOdor] = '';
+                newRow[columnMapping.ph] = ph;
+                newRow[columnMapping.notes] = notes;
+                newRow[columnMapping.sdsFile] = sdsFile;
+
+            }
+
+
+            // Trim and clean all fields
+            for (const key in newRow) {
+                if (typeof newRow[key] === 'string') {
+                    newRow[key] = newRow[key].trim().replace(/^"+|"+$/g, '');
+                }
+            }
+            // Check for 'EXTRA_LEFT' in notes and parse it
+            const notes = newRow[columnMapping.notes] || '';
+            if (notes.includes('EXTRA_LEFT:')) {
+                const parts = notes.split('EXTRA_LEFT:');
+                newRow[columnMapping.notes] = parts[0].replace('FR SDS available. |', '').trim();
+                const extraData = parts[1].trim().split('|').map(s => s.trim());
+
+                if (extraData.length > 0 && extraData[0] && !newRow[columnMapping.ph]) newRow[columnMapping.ph] = extraData[0];
+                if (extraData.length > 1 && extraData[1] && !newRow[columnMapping.specificGravity]) newRow[columnMapping.specificGravity] = extraData[1];
+                if (extraData.length > 2 && extraData[2] && !newRow[columnMapping.flashPoint]) newRow[columnMapping.flashPoint] = extraData[2];
+                if (extraData.length > 0 && extraData[0] && !newRow[columnMapping.appearanceOdor]) {
+                    newRow[columnMapping.appearanceOdor] = extraData[0];
+                }
+            }
+
+            return newRow;
+        });
+    }
+
     function populateFilters() {
         const manufacturers = [...new Set(sdsData.map(item => item[columnMapping.manufacturer]).filter(Boolean))].sort();
         const categories = [...new Set(sdsData.map(item => item[columnMapping.category]).filter(Boolean))].sort();
+
+        // Clear existing options
+        manufacturerFilter.innerHTML = '<option value="">All</option>';
+        categoryFilter.innerHTML = '<option value="">All</option>';
+
 
         manufacturers.forEach(m => {
             const option = document.createElement('option');
